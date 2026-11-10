@@ -107,10 +107,11 @@ profile," entirely on free tiers: **MongoDB Atlas** (database), **Render**
 2. **Add New** → **Project** → import your `crisisgrid` repo.
 3. Configure the **Root Directory** as `frontend`. Vercel should detect Vite;
    use `npm run build` as the build command and `dist` as the output directory.
-4. Add the environment variable:
+4. Add the environment variables:
    | Key | Value |
    |---|---|
-   | `VITE_API_URL` | `https://crisisgrid-api.onrender.com/api` (your Render URL + `/api`) |
+   | `VITE_API_URL` | Your backend URL ending in `/api` (needed for real login/data) |
+   | `VITE_DEMO_MODE` | `true` for standalone simulated login; `false` when using a backend |
 5. Click **Deploy**. Vercel builds and gives you a URL like
    `https://crisisgrid.vercel.app`.
 
@@ -119,9 +120,14 @@ profile," entirely on free tiers: **MongoDB Atlas** (database), **Render**
 1. Go to [netlify.com](https://netlify.com) and import the same GitHub repo.
 2. Set the **Base directory** to `frontend`, the **Build command** to
    `npm run build`, and the **Publish directory** to `dist`.
-3. Add `VITE_API_URL` with your backend URL ending in `/api`, then deploy.
+3. If using a backend, add `VITE_API_URL` with its URL ending in `/api`.
    The `frontend/public/_redirects` file configures React Router routes to
    continue working when opened directly or refreshed.
+   To enable frontend-only demo sign-in without a backend, set
+   `VITE_DEMO_MODE=true` in the site environment. This is simulated
+   authentication only; it is not secure and does not provide API data or
+   backend actions. Redeploy after setting or changing these environment
+   variables.
 
 For either host, the frontend can be deployed while the backend is offline,
 but login, registration, and data-backed pages require a deployed API.

@@ -8,6 +8,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import api, { setAccessToken, setOnRefreshFailed } from '../api/axiosClient';
+import { DEMO_PASSWORD, DEMO_SESSION_KEY, DEMO_USERS, FRONTEND_DEMO_MODE } from '../utils/demoAuth';
 
 const AuthContext = createContext(null);
 
@@ -18,9 +19,27 @@ export function AuthProvider({ children }) {
   const clearSession = useCallback(() => {
     setUser(null);
     setAccessToken(null);
+    if (FRONTEND_DEMO_MODE) sessionStorage.removeItem(DEMO_SESSION_KEY);
   }, []);
 
   useEffect(() => {
+    if (FRONTEND_DEMO_MODE) {
+      setOnRefreshFailed(() => {});
+      const savedUser = sessionStorage.getItem(DEMO_SESSION_KEY);
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          const demoUser = DEMO_USERS.find((account) => account._id === parsedUser._id);
+          if (demoUser) setUser(demoUser);
+          else sessionStorage.removeItem(DEMO_SESSION_KEY);
+        } catch {
+          sessionStorage.removeItem(DEMO_SESSION_KEY);
+        }
+      }
+      setLoading(false);
+      return;
+    }
+
     setOnRefreshFailed(clearSession);
 
     // Attempt to restore a session from the httpOnly refresh cookie.
@@ -39,6 +58,18 @@ export function AuthProvider({ children }) {
   }, [clearSession]);
 
   const login = async (email, password) => {
+    if (FRONTEND_DEMO_MODE) {
+      const demoUser = DEMO_USERS.find(
+        (account) => account.email === email.trim().toLowerCase()
+      );
+      if (!demoUser || password !== DEMO_PASSWORD) {
+        throw new Error('Use one of the listed demo accounts and its demo password.');
+      }
+      sessionStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(demoUser));
+      setUser(demoUser);
+      return demoUser;
+    }
+
     const { data } = await api.post('/auth/login', { email, password });
     setAccessToken(data.accessToken);
     setUser(data.user);
@@ -46,6 +77,9 @@ export function AuthProvider({ children }) {
   };
 
   const register = async (payload) => {
+    if (FRONTEND_DEMO_MODE) {
+      throw new Error('Registration is unavailable in frontend demo mode.');
+    }
     const { data } = await api.post('/auth/register', payload);
     setAccessToken(data.accessToken);
     setUser(data.user);
@@ -53,6 +87,10 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    if (FRONTEND_DEMO_MODE) {
+      clearSession();
+      return;
+    }
     try {
       await api.post('/auth/logout');
     } finally {

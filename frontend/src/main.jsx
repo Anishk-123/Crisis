@@ -6,6 +6,7 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { SocketProvider } from './context/SocketContext.jsx';
 import { registerMapServiceWorker } from './utils/offlineMap.js';
+import { FRONTEND_DEMO_MODE } from './utils/demoAuth.js';
 import './styles/index.css';
 
 // Registers the service worker that caches map tiles for offline use during
@@ -20,6 +21,7 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      enabled: !FRONTEND_DEMO_MODE,
     },
   },
 });

@@ -7,6 +7,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { API_BASE_URL } from '../api/axiosClient';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth';
 
 const SocketContext = createContext(null);
 
@@ -20,6 +21,8 @@ export function SocketProvider({ children }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    if (FRONTEND_DEMO_MODE) return undefined;
+
     const socketInstance = io(SOCKET_URL, { withCredentials: true, autoConnect: true });
     setSocket(socketInstance);
 
