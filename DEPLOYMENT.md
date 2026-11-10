@@ -99,21 +99,33 @@ profile," entirely on free tiers: **MongoDB Atlas** (database), **Render**
 
 ---
 
-## Part 4 — Frontend: Vercel
+## Part 4 — Frontend: Vercel or Netlify
+
+### Vercel
 
 1. Go to [vercel.com](https://vercel.com) and sign up with GitHub.
 2. **Add New** → **Project** → import your `crisisgrid` repo.
-3. Configure:
-   - **Root Directory**: `frontend`
-   - **Framework Preset**: Vite (should auto-detect)
-   - **Build Command**: `npm run build` (default)
-   - **Output Directory**: `dist` (default)
-4. **Environment Variables**:
+3. Configure the **Root Directory** as `frontend`. Vercel should detect Vite;
+   use `npm run build` as the build command and `dist` as the output directory.
+4. Add the environment variable:
    | Key | Value |
    |---|---|
    | `VITE_API_URL` | `https://crisisgrid-api.onrender.com/api` (your Render URL + `/api`) |
 5. Click **Deploy**. Vercel builds and gives you a URL like
    `https://crisisgrid.vercel.app`.
+
+### Netlify
+
+1. Go to [netlify.com](https://netlify.com) and import the same GitHub repo.
+2. Set the **Base directory** to `frontend`, the **Build command** to
+   `npm run build`, and the **Publish directory** to `dist`.
+3. Add `VITE_API_URL` with your backend URL ending in `/api`, then deploy.
+   The `frontend/public/_redirects` file configures React Router routes to
+   continue working when opened directly or refreshed.
+
+For either host, the frontend can be deployed while the backend is offline,
+but login, registration, and data-backed pages require a deployed API.
+`VITE_API_URL` is embedded during the build, so redeploy after changing it.
 
 ---
 

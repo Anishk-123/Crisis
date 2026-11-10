@@ -31,7 +31,10 @@ export function setOnRefreshFailed(callback) {
 
 api.interceptors.request.use((config) => {
   if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${accessToken}`,
+    };
   }
   return config;
 });
