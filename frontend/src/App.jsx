@@ -41,9 +41,13 @@ export default function App() {
         <Route
           path="/citizen/report"
           element={
-            <ProtectedRoute allowedRoles={['citizen', 'volunteer', 'ngo']}>
-              <ReportIncident />
-            </ProtectedRoute>
+            FRONTEND_DEMO_MODE ? (
+              <Navigate to="/citizen" replace />
+            ) : (
+              <ProtectedRoute allowedRoles={['citizen', 'volunteer', 'ngo']}>
+                <ReportIncident />
+              </ProtectedRoute>
+            )
           }
         />
 

@@ -8,6 +8,7 @@ import IncidentMap from '../components/IncidentMap.jsx';
 import IncidentCard from '../components/IncidentCard.jsx';
 import EmergencyContacts from '../components/EmergencyContacts.jsx';
 import OfflineMapControl from '../components/OfflineMapControl.jsx';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth.js';
 
 // Fallback used only if geolocation is unavailable/denied — matches the
 // seeded demo data's location so the offline download still has somewhere
@@ -75,13 +76,21 @@ export default function CitizenDashboard() {
             <h1 className="font-display text-2xl font-semibold text-console-mist">Citizen dashboard</h1>
             <p className="text-sm text-console-muted">Your reports, and everything nearby right now.</p>
           </div>
-          <Link
-            to="/citizen/report"
-            className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
-          >
-            + Report incident / SOS
-          </Link>
+          {!FRONTEND_DEMO_MODE && (
+            <Link
+              to="/citizen/report"
+              className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
+            >
+              + Report incident / SOS
+            </Link>
+          )}
         </div>
+
+        {FRONTEND_DEMO_MODE && (
+          <p className="mt-4 rounded-md border border-console-border bg-console-surface px-3 py-2 text-xs text-console-muted">
+            UI preview only. Incident reports and live map data require a backend.
+          </p>
+        )}
 
         <div className="mt-6">
           <EmergencyContacts />
@@ -91,7 +100,9 @@ export default function CitizenDashboard() {
           <div className="lg:col-span-3 space-y-4">
             <div>
               <h2 className="mb-2 font-mono text-xs uppercase tracking-wide text-console-muted">
-                Live map — incidents &amp; nearby shelters/hospitals
+                {FRONTEND_DEMO_MODE
+                  ? 'Map preview — incidents & nearby shelters/hospitals'
+                  : 'Live map — incidents & nearby shelters/hospitals'}
               </h2>
               <IncidentMap incidents={allIncidents} facilities={facilities} height="480px" />
             </div>
@@ -103,7 +114,9 @@ export default function CitizenDashboard() {
             <div className="space-y-3">
               {myIncidents.length === 0 && (
                 <p className="rounded-lg border border-dashed border-console-border p-4 text-sm text-console-muted">
-                  You haven't reported anything yet. Reports you submit will appear here with live status updates.
+                  {FRONTEND_DEMO_MODE
+                    ? 'Live report data is unavailable in this frontend-only preview.'
+                    : "You haven't reported anything yet. Reports you submit will appear here with live status updates."}
                 </p>
               )}
               {myIncidents.map((incident) => (

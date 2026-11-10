@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext.jsx';
 import { dashboardPathForRole } from '../utils/roleRouting.js';
 import AlertBanner from './AlertBanner.jsx';
 import AssistantChat from './AssistantChat.jsx';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth.js';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -28,7 +29,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4 font-mono text-xs text-console-muted">
           <span className="hidden items-center gap-1.5 sm:flex">
             <span className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-severity-low' : 'bg-severity-critical'}`} />
-            {connected ? 'LIVE' : 'OFFLINE'}
+            {FRONTEND_DEMO_MODE ? 'DEMO' : connected ? 'LIVE' : 'OFFLINE'}
           </span>
           {user && (
             <>
@@ -47,8 +48,8 @@ export default function Navbar() {
       {/* Every authenticated page includes <Navbar>, so mounting the alert
           banner and assistant chat here means both reach every role's
           screen without wiring them into each dashboard separately. */}
-      {user && <AlertBanner />}
-      {user && <AssistantChat />}
+      {user && !FRONTEND_DEMO_MODE && <AlertBanner />}
+      {user && !FRONTEND_DEMO_MODE && <AssistantChat />}
     </>
   );
 }

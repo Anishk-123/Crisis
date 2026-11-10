@@ -3,6 +3,7 @@ import SeverityBadge from './SeverityBadge.jsx';
 import TrustBadge from './TrustBadge.jsx';
 import api from '../api/axiosClient.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth.js';
 
 function formatTime(isoString) {
   const date = new Date(isoString);
@@ -108,7 +109,7 @@ export default function IncidentCard({ incident, onClick, actions }) {
       )}
 
       {/* Crowd verification — anyone except the original reporter can weigh in. */}
-      {!isOwnReport && incident.status !== 'rejected' && (
+      {!FRONTEND_DEMO_MODE && !isOwnReport && incident.status !== 'rejected' && (
         <div className="mt-3 flex items-center gap-2 border-t border-console-border pt-2" onClick={(e) => e.stopPropagation()}>
           <span className="font-mono text-[10px] uppercase text-console-muted">Does this look real?</span>
           <button
@@ -137,7 +138,7 @@ export default function IncidentCard({ incident, onClick, actions }) {
       )}
 
       {/* Authority verification — EOC/rescue/admin only, one-time decision. */}
-      {canActAsAuthority && !alreadyDecided && (
+      {!FRONTEND_DEMO_MODE && canActAsAuthority && !alreadyDecided && (
         <div className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           <span className="font-mono text-[10px] uppercase text-console-muted">Authority review:</span>
           <button

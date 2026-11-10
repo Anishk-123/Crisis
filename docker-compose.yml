@@ -57,6 +57,7 @@ services:
       - backend
     environment:
       VITE_API_URL: http://localhost:5000/api
+      VITE_DEMO_MODE: "false"
     ports:
       - "5173:5173"
     volumes:

@@ -6,6 +6,7 @@ import { useSocket } from '../context/SocketContext.jsx';
 import Navbar from '../components/Navbar.jsx';
 import IncidentMap from '../components/IncidentMap.jsx';
 import IncidentCard from '../components/IncidentCard.jsx';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth.js';
 
 export default function RescueDashboard() {
   const { user } = useAuth();
@@ -63,7 +64,11 @@ export default function RescueDashboard() {
       <Navbar />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <h1 className="font-display text-2xl font-semibold text-console-mist">Rescue team console</h1>
-        <p className="text-sm text-console-muted">Your assignments, plus unassigned high-priority incidents nearby.</p>
+        <p className="text-sm text-console-muted">
+          {FRONTEND_DEMO_MODE
+            ? 'Read-only UI preview. Live assignments and incident actions require a backend.'
+            : 'Your assignments, plus unassigned high-priority incidents nearby.'}
+        </p>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-5">
           <div className="lg:col-span-3">
@@ -81,7 +86,7 @@ export default function RescueDashboard() {
                     key={incident._id}
                     incident={incident}
                     onClick={() => setSelectedIncidentId(incident._id)}
-                    actions={
+                    actions={!FRONTEND_DEMO_MODE &&
                       incident.status !== 'resolved' && (
                         <button
                           onClick={() => advanceStatus.mutate({ id: incident._id, status: 'resolved' })}
@@ -89,13 +94,14 @@ export default function RescueDashboard() {
                         >
                           Mark resolved
                         </button>
-                      )
-                    }
+                      )}
                   />
                 ))}
                 {myAssignments.length === 0 && (
                   <p className="rounded-lg border border-dashed border-console-border p-4 text-sm text-console-muted">
-                    No incidents assigned to you yet.
+                    {FRONTEND_DEMO_MODE
+                      ? 'Assignment data is unavailable in this frontend-only preview.'
+                      : 'No incidents assigned to you yet.'}
                   </p>
                 )}
               </div>
@@ -111,16 +117,21 @@ export default function RescueDashboard() {
                     key={incident._id}
                     incident={incident}
                     onClick={() => setSelectedIncidentId(incident._id)}
-                    actions={
+                    actions={!FRONTEND_DEMO_MODE && (
                       <button
                         onClick={() => selfAssign.mutate({ id: incident._id })}
                         className="rounded border border-console-border px-2 py-1 font-mono text-[11px] uppercase text-console-mist hover:border-brand hover:text-brand"
                       >
                         Self-assign
                       </button>
-                    }
+                    )}
                   />
                 ))}
+                {unassignedUrgent.length === 0 && FRONTEND_DEMO_MODE && (
+                  <p className="rounded-lg border border-dashed border-console-border p-4 text-sm text-console-muted">
+                    Live incident data is unavailable in this frontend-only preview.
+                  </p>
+                )}
               </div>
             </div>
           </div>

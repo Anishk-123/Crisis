@@ -7,6 +7,7 @@ import IncidentMap from '../components/IncidentMap.jsx';
 import IncidentCard from '../components/IncidentCard.jsx';
 import EmergencyDirectory from '../components/EmergencyDirectory.jsx';
 import IssueAlertPanel from '../components/IssueAlertPanel.jsx';
+import { FRONTEND_DEMO_MODE } from '../utils/demoAuth.js';
 
 const STATUS_FLOW = ['reported', 'acknowledged', 'dispatched', 'in_progress', 'resolved'];
 
@@ -81,7 +82,11 @@ export default function EOCDashboard() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-display text-2xl font-semibold text-console-mist">Operations dashboard</h1>
-            <p className="text-sm text-console-muted">Live picture of every open incident across the region.</p>
+            <p className="text-sm text-console-muted">
+              {FRONTEND_DEMO_MODE
+                ? 'Read-only UI preview. Live incidents and operations require a backend.'
+                : 'Live picture of every open incident across the region.'}
+            </p>
           </div>
 
           <div className="flex gap-2">
@@ -138,8 +143,12 @@ export default function EOCDashboard() {
                 flyToIncidentId={selectedIncidentId}
               />
             </div>
-            <IssueAlertPanel />
-            <EmergencyDirectory />
+            {!FRONTEND_DEMO_MODE && (
+              <>
+                <IssueAlertPanel />
+                <EmergencyDirectory />
+              </>
+            )}
           </div>
 
           <div className="lg:col-span-2">
@@ -154,7 +163,7 @@ export default function EOCDashboard() {
                     key={incident._id}
                     incident={incident}
                     onClick={() => setSelectedIncidentId(incident._id)}
-                    actions={
+                    actions={!FRONTEND_DEMO_MODE &&
                       next && (
                         <button
                           onClick={() => advanceStatus.mutate({ id: incident._id, status: next })}
@@ -163,14 +172,15 @@ export default function EOCDashboard() {
                         >
                           Mark {next.replace('_', ' ')}
                         </button>
-                      )
-                    }
+                      )}
                   />
                 );
               })}
               {incidents.length === 0 && (
                 <p className="rounded-lg border border-dashed border-console-border p-4 text-sm text-console-muted">
-                  No incidents match this filter.
+                  {FRONTEND_DEMO_MODE
+                    ? 'Incident data is unavailable in this frontend-only preview.'
+                    : 'No incidents match this filter.'}
                 </p>
               )}
             </div>

@@ -1,4 +1,4 @@
-export const FRONTEND_DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
+export const FRONTEND_DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 export const DEMO_PASSWORD = 'Demo@1234';
 export const DEMO_SESSION_KEY = 'crisisgrid-demo-user';
 
